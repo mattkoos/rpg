@@ -9,55 +9,11 @@ from roll_python_game.game.act import Act
 from roll_python_game.game.chapter import Chapter
 from roll_python_game.game.scene import Scene
 
-
-
-
-
-def run_chapter(chapter):
-    #expects a chapter object
-    print(chapter.get_title())
-    print(chapter.get_description())
-    time.sleep(0.5)
-    for scene in chapter:
-        scene.run_scene()
-
-def show_chapter_options(chapter):
-    for option_num, option in enumerate(chapter):
-        print(f"[{option_num + 1}]: {option}")
-    print("\n")
-
-def clean_selection(selection):
-    try:
-        return int(selection)
-    except ValueError as e:
-        return 9999
-
-def select_chapter(chapter_options, chapters):
-    selection = clean_selection(input("---> "))
-    count = 1
-    while int(selection) not in range(1, len(chapter_options)+1): # input is bad
-        print(f"Please select where to go next{','*count} again.\n")
-        for option in chapter_options:
-            print(option)
-        selection = clean_selection(input("-" * count + "---> "))
-        count += 1
-    return chapters[selection]
-
-def story_loop(story, scenes):
-    for act in story: # make this be an imported function from a module
-        print("Please select where to go next.\n")
-        for option in act.get_options():
-            print(option)
-        # for option_num, option in enumerate(act.get_options()):
-        #     print(f"[{option_num + 1}]: {option}")
-        print("\n")
-        selected_chapter = select_chapter(act.get_options(), act.get_chapters())
-        #run_chapter(scenes[select_location(act.get_options(), scenes)])
-        run_chapter(selected_chapter)
-
-def run():
+def load_story():
+    # This will eventually pull from a database
     player = Character()
-    print(f"Welcome to the game, {player.get_name()}.")
+    print(f"\nWelcome to the game, {player.get_name()}.")
+    print(player)
     enemies = {
         "goblin": Enemy(
                         "Boblin", 
@@ -94,7 +50,7 @@ def run():
                 enemies["bugbear"],
                 "You find the McGuffin and grab it. Now, time to leave.",
                 "A murderous bugbear spots you on your way out.",
-                "After you effortlessly murder Bugbob and make your way to the end of the chapter."
+                "After you effortlessly murder Bugbob, you make your way to the end of the chapter."
                 ),
             ],
     }
@@ -109,9 +65,13 @@ def run():
     scenes["dark forest"] = scenes["shady tavern"]
     scenes["frozen mountain"] = scenes["shady tavern"]
 
+    chapter_descriptions = { # actX_chapters can be generated more easily with this dict.
+        "example location": ("title", "description"),
+        "shady tavern": ("The Shady Tavern", "You spot a small tavern. It's shady.")
+    }
     act1_chapters = {
-        1: Chapter("shady tavern",
-                   "shady tavern is shady",
+        1: Chapter(chapter_descriptions["shady tavern"][0],
+                   chapter_descriptions["shady tavern"][1],
                    scenes["shady tavern"]),
         2: Chapter("midnight stables",
                    "midnight stables desription",
@@ -148,43 +108,26 @@ def run():
                    scenes["frozen mountain"]),
     }
     # chapters = [
-    #     ["shady tavern", "midnight stables", "field"], # chapter 1 options
-    #     ["swamp", "beach", "lake"], # chapter 2 options
-    #     ["volcano", "wizard tower", "dark forest"], # chapter 3 options
-    #     ["frozen mountain"], # chapter 4 options
-    # ]
+        #     ["shady tavern", "midnight stables", "field"], # chapter 1 options
+        #     ["swamp", "beach", "lake"], # chapter 2 options
+        #     ["volcano", "wizard tower", "dark forest"], # chapter 3 options
+        #     ["frozen mountain"], # chapter 4 options
+        # ]
 
-    
-    tale = Story([Act(act1_chapters), Act(act2_chapters), Act(act3_chapters), Act(act4_chapters)])
-    # for chapter in tale:
-    #     print(chapter.get_title(), end=" ")
+    return Story([Act(act1_chapters), Act(act2_chapters),
+                  Act(act3_chapters), Act(act4_chapters)])
+
+def run():
     try:
-        story_loop(tale, scenes)
+        #playthrough
+        for act in load_story(): act.run_act()
+        #ending
         print(f"Sorry, {player.get_name()}, you died from going so many places! Goodbye.\n")
         time.sleep(0.5)
     except KeyboardInterrupt:
         print("exiting")
         sys.exit()
 
-
-
-
-### From the interwebs ###
-# player = Player()
-
-# def run(start_at=None):
-#     """Starts the game"""
-#     player = Character() # load character
-#     if not start_at:
-#         scene = SCENES[0]
-#     else:
-#         scene = SCENES[start_at]
-#     scene.init_player(player)
-#     while 1:
-#         new_scene = scene.run()
-#         if new_scene != None:
-#             scene = SCENES[new_scene]
-#             scene.init_player(player)
 
 if __name__ == "__main__":
     run()

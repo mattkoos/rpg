@@ -11,7 +11,6 @@ class Scene:
         self._enemy_des = enemy_des
         self._outro_des = outro_des
 
-
     def run_scene(self):
         print(self._intro_des)
         input("_____________________________________________\n")
