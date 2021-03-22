@@ -12,6 +12,8 @@ class Character:
         self._progress = (1, 1) # playthrough, act, ?????chapter, scene
         self._level = 1
         self._xp = 0
+        self._next_lvl_xp = self.calc_next_lvl_xp(self._level)
+        self._lvl_progress = self.calc_lvl_progress(self._level, self._xp)
         self._hp = 30
         self._ac = 10
         self._attack = 2 # adds to weapon accuracy AND weapon damage
@@ -25,7 +27,8 @@ class Character:
             "************\n"
             f"* {self._name} the {self._class.title()}\n"
             "*\n"
-            f"* Level: {self._level}   Experience: {self._xp}\n"
+            f"* Level: {self._level}   XP: {self._xp}\n"
+            f"* {self._level}{'-'*self._lvl_progress}{' '*(20-self._lvl_progress)}{self._level + 1}\n"
             "*\n"
             f"* Health: {self._hp}   Happiness: {'None'}\n"
             "*\n"
@@ -111,12 +114,18 @@ class Character:
 
     def get_status(self):
         print(self) #should call the dunder str method
-        # if player is ready to level up, state that here 
+        # if player is ready to level up, state that here
+
+    def calc_next_lvl_xp(self, level):
+        return level * (level + 1)
+
+    def calc_lvl_progress(self, level, xp):
+        # returns number between 0 and 19 where 20 would happen at level up
+        progress = (xp - self.calc_next_lvl_xp(level - 1)) / (self.calc_next_lvl_xp(level) - self.calc_next_lvl_xp(level - 1))
+        return int(progress * 20)
 
     def check_level(self):
-        next_level_xp = self._level * (self._level + 1)
-        if self._xp >= next_level_xp: self.level_up()
-
+        if self._xp >= self.calc_next_lvl_xp(self._level): self.level_up()
 
     def level_up(self):
         # stats could be increased based on class
@@ -125,6 +134,7 @@ class Character:
 
     def update(self):
         self.check_level()
+        self._lvl_progress = self.calc_lvl_progress(self._level, self._xp)
         self.get_status()
         print("If the character needs to level up, this is where that happens.")
         

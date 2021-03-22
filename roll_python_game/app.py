@@ -193,13 +193,14 @@ def load_story():
         #     ["frozen mountain"], # chapter 4 options
         # ]
 
-    return Story([Act(act1_chapters), Act(act2_chapters),
+    return player, Story([Act(act1_chapters), Act(act2_chapters),
                   Act(act3_chapters), Act(act4_chapters)])
 
 def run():
     try:
         #playthrough
-        for act in load_story(): act.run_act()
+        player, story = load_story()
+        for act in story: act.run_act()
         #ending
         print(f"Sorry, {player.get_name()}, you died from going so many places! Goodbye.\n")
         time.sleep(0.5)
