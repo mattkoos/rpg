@@ -3,9 +3,10 @@
 
 class Chapter:
 
-    def __init__(self, title, description, scenes):
+    def __init__(self, title, intro_description, outro_description, scenes):
         self._title = title
-        self._description = description
+        self._intro_description = intro_description
+        self._outro_description = outro_description
         self._scenes = scenes # this should be a list of Scene() instances
 
     def get_title(self):
@@ -13,5 +14,6 @@ class Chapter:
 
     def run_chapter(self):
         print(f"\n| {self._title} |\n")
-        print(self._description)
+        print(self._intro_description)
         for scene in self._scenes:scene.run_scene()
+        print(self._outro_description)
