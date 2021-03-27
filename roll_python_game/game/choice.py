@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from roll_python_game.resources.console import console
 
 def get_display_options(options):
     return [f"[{num}] {options[num]}" for num in sorted(options.keys())]

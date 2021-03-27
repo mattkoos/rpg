@@ -103,7 +103,7 @@ def load_story():
 
     player = Character()
     print(f"\nWelcome to the game, {player.get_name()}.")
-    print(player)
+    player.get_sheet()
     player.choose_class()
 
     scenes = {

@@ -4,6 +4,9 @@ import sys
 from .choice import prompt_choice
 from .goods import Weapon
 from .goods import Armor
+from roll_python_game.resources.console import console
+from rich.panel import Panel
+from rich.console import ConsoleOptions
 
 class Character:
 
@@ -27,42 +30,56 @@ class Character:
         self._weapons = [Weapon("Fist", 0, 2, "bludgeoning", 0, "all"), Weapon("Fist", 0, 2, "bludgeoning", 0, "all")]
         self._armor = Armor("Nothing", 0, 0, [], 0, "all")
         self._items = ["pocket sand"]
-        self._class_tag = "classless"
-        self.LEVEL_UP_DISPATCHER = {
+        self._class_tag = "jobless"
+        self.LEVEL_UP_DISPATCHER = { # need to be static vars
             1: (self.increase_stat, ["ac", 1]),
             2: (self.increase_stat, ["attack", 2]),
             3: (self.increase_stat, ["regen", 1]),
             4: (self._weapons[0].upgrade, None),
             5: (self._weapons[1].upgrade, None),
             6: (self._armor.upgrade, None),
-            7: (self.new_equipment, None), # need to be static vars
-            8: (self.adjust_hp, [0.5]), # need to be static vars
+            7: (self.new_equipment, None),
+            8: (self.adjust_hp, [0.5]),
         }
 
-    def __str__(self):
-        return (
-            "************\n"
-            f"* {self._name} the {self._class_tag.title()}\n"
-            "*\n"
-            f"* Level: {self._level}   XP: {self._xp}\n"
-            f"* {self._level}{'-'*self._lvl_progress}{' '*(20-self._lvl_progress)}{self._level + 1}\n"
-            "*\n"
-            f"* Health: {self._current_hp}   Max Health: {self._max_hp}\n"
-            "*\n"
-            f"* Armor Class: {self._ac}   Armor: {self._armor}\n"
-            "*\n"
-            f"* Attack: {self._attack}   Weapons: {self._weapons[0]}, {self._weapons[1]}\n"
-            "*\n"
-            f"* Speed: {self._speed}   Stealth: {self._stealth}\n"
-            "*\n"
-            f"* Strength: {self._strength}   Charisma: {self._charisma}\n"
-            "************\n"
-            "Inventory:\n"
-            f"{str(self._weapons[0].get_name())*bool(self._weapons[0])}\n"
-            f"{str(self._weapons[1].get_name())*bool(self._weapons[1])}\n"
-            f"{str(self._armor.get_name())*bool(self._armor)}\n"
-            f"{str(self._items)*bool(self._items)}\n"
-        )
+    def __rich_console__(self, console: console, options: ConsoleOptions):
+        yield f"[blue b]{self._name} the {self._class_tag.title()}[/blue b]\n"
+        yield f"Level: [b]{self._level}[/b]   XP: [b]{self._xp}[/b]\n"
+        yield f"{self._level}{'-'*self._lvl_progress}{' '*(20-self._lvl_progress)}{self._level + 1}\n"
+        yield f"Health: [b]{self._current_hp}[/b]   Max Health: [b]{self._max_hp}[/b]\n"
+        yield f"Armor Class: [b]{self._ac}[/b]   Armor: {self._armor}\n"
+        yield f"Attack: [b]{self._attack}[/b]   Weapons: {self._weapons[0]}, {self._weapons[1]}\n"
+        yield f"Speed: [b]{self._speed}[/b]   Stealth: [b]{self._stealth}[/b]\n"
+        yield f"Strength: [b]{self._strength}[/b]   Charisma: [b]{self._charisma}[/b]\n"
+        yield "\n"
+        yield "[u]Inventory[/u]\n"
+        yield f"{str(self._items)*bool(self._items)}\n"
+
+    def get_sheet(self):
+        console.print(Panel(self, border_style="blue"))
+
+    # def __str__(self):
+    #     return (
+    #         "\n"
+    #         "************\n"
+    #         f"* {self._name} the {self._class_tag.title()}\n"
+    #         "*\n"
+    #         f"* Level: {self._level}   XP: {self._xp}\n"
+    #         f"* {self._level}{'-'*self._lvl_progress}{' '*(20-self._lvl_progress)}{self._level + 1}\n"
+    #         "*\n"
+    #         f"* Health: {self._current_hp}   Max Health: {self._max_hp}\n"
+    #         "*\n"
+    #         f"* Armor Class: {self._ac}   Armor: {self._armor}\n"
+    #         "*\n"
+    #         f"* Attack: {self._attack}   Weapons: {self._weapons[0]}, {self._weapons[1]}\n"
+    #         "*\n"
+    #         f"* Speed: {self._speed}   Stealth: {self._stealth}\n"
+    #         "*\n"
+    #         f"* Strength: {self._strength}   Charisma: {self._charisma}\n"
+    #         "************\n"
+    #         "Inventory:\n"
+    #         f"{str(self._items)*bool(self._items)}\n"
+    #     )
 
     def get_name(self):
         return self._name
@@ -185,11 +202,7 @@ class Character:
         self._current_hp = max(self._current_hp, 0)
         self._current_hp = min(self._current_hp, self._max_hp)
 
-    def get_status(self):
-        print(self) #should call the dunder str method
-        # if player is ready to level up, state that here
-
-    def increase_stat(self, stat, amount): # this doesn't work!!!!!!!
+    def increase_stat(self, stat, amount): 
         # print(f"increase stat from {stat}...")
         # stat += amount
         # print(f"...to: {stat}")
@@ -226,7 +239,7 @@ class Character:
 
     def check_level(self):
         self._lvl_progress = self.calc_lvl_progress(self._level, self._xp)
-        self.get_status()
+        self.get_sheet()
         if self._xp >= self.calc_next_lvl_xp(self._level): self.level_up()
 
     def level_up(self):
@@ -250,7 +263,6 @@ class Character:
             self.increase_stat("attack", 1)
         else:
             print("Check level_up() for current class...")
-        
 
         ### stat increase choice
         options = {
