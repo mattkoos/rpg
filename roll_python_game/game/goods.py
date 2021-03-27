@@ -21,7 +21,11 @@ class Weapon:
         self._color = random.choice(Weapon.WEAPON_COLORS)
 
     def __str__(self):
-        return f"level {str(self._level)} {self._name}"
+        #return f"level {str(self._level)} {self._name}"
+        return f"{self._name} (lvl {str(self._level)})"
+
+    def get_name(self):
+        return self._name
 
     def get_stats(self):
         return (
@@ -31,6 +35,15 @@ class Weapon:
             f"* damage type: {self._dmg_type}   color: {self._color}"
             "**********"
         )
+
+    def get_accuracy(self):
+        return self._accuracy
+
+    def get_damage(self):
+        return self._damage
+
+    def get_dmg_type(self):
+        return self._dmg_type
 
     def upgrade(self):
         self._level += 1
@@ -42,19 +55,29 @@ class Armor:
 
     ARMOR_COLORS = ['red', 'blue', 'silver', 'purple', 'yellow', 'gold', 'green', 'black', 'white']
 
-    def __init__(self, name="armor", ac=1, absorb=1, resistance="none", level=0, class_tag="all"):
+    def __init__(self, name="armor", ac=1, absorb=1, resistances=[], level=0, class_tag="all"):
         # possible dmg_types(for resistance): "bludgeoning", "slashing", "piercing", "fire", "ice", "poison", "all"
         # possible class_tags: "warrior", "wizard", "rogue"
         self._name = name
         self._ac = ac
         self._absorb = absorb
-        self._resistance = resistance
+        self._resistances = resistances
         self._level = level
         self._class_tag = class_tag
         self._color = random.choice(Armor.ARMOR_COLORS)
 
     def __str__(self):
-        return f"level {str(self._level)} {self._name}"
+        #return f"level {str(self._level)} {self._name}"
+        return f"{self._name} (lvl {str(self._level)})"
+
+    def get_name(self):
+        return self._name
+
+    def get_absorb(self):
+        return self._absorb
+
+    def get_resistances(self):
+        return self._resistances
 
     def get_stats(self):
         return (
@@ -75,3 +98,6 @@ class Item:
 
     def __init__(self):
         pass
+
+    def use(self):
+        print(f"use {self}")

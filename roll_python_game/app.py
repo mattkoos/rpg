@@ -41,7 +41,6 @@ from roll_python_game.game.scene import Scene
 def load_story():
     # This will eventually pull from a database
     #name="weapon", accuracy=1, damage=1, dmg_type="bludgeoning", level=0, class_tag="all"
-    fist = Weapon("Fist", 0, 2, "bludgeoning", 0, "all"),
     weapons = {
         0: {
             "short sword": Weapon("Short Sword", 1, 4, "slashing", 0, "all"),
@@ -87,16 +86,25 @@ def load_story():
         },
     }
     items = {}
-    enemies = {
-        "goblin": Enemy("Boblin", 30),
-        "blob": Enemy("Blob", 60),
-        "bugbear": Enemy("Bugbob", 100)
+    enemies = {#name, weight, hp, ac, absorb, accuracy, damage, dmg_type, speed, resistances, xp
+        "goblin": Enemy(
+                "Boblin",
+                30, 9, 8, 0, 2, 2, "slashing", 10, [], 1
+            ),
+        "blob": Enemy(
+                "Blob",
+                60, 20, 7, 0, 2, 2, "poison", 1, [], 4
+            ),
+        "bugbear": Enemy(
+                "Bugbob",
+                100, 20, 12, 1, 5, 2, "slashing", 4, [], 7
+            )
     }
 
     player = Character()
-    player.choose_class()
     print(f"\nWelcome to the game, {player.get_name()}.")
     print(player)
+    player.choose_class()
 
     scenes = {
         "shady tavern": [
